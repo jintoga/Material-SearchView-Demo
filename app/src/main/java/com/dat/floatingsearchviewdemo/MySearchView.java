@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.os.Build;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -16,6 +15,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import java.util.Arrays;
 
 /**
@@ -26,7 +26,7 @@ public class MySearchView extends FrameLayout {
     private boolean isSearchViewOpen;
     private FrameLayout rootView;
     private EditText searchEditText;
-    private CardView searchBar;
+    private LinearLayout searchBar;
     private ImageButton back;
     private ImageButton clear;
     private View backgroundView;
@@ -51,7 +51,7 @@ public class MySearchView extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.search_view, this, true);
         // Get items
         rootView = (FrameLayout) findViewById(R.id.search_layout);
-        searchBar = (CardView) findViewById(R.id.search_bar);
+        searchBar = (LinearLayout) findViewById(R.id.search_bar);
         back = (ImageButton) findViewById(R.id.action_back);
         searchEditText = (EditText) findViewById(R.id.et_search);
         clear = (ImageButton) findViewById(R.id.action_clear);
