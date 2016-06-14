@@ -5,6 +5,8 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.os.Build;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -14,6 +16,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import java.util.Arrays;
 
 /**
  * Created by DAT on 13-Jun-16.
@@ -26,6 +29,9 @@ public class MySearchView extends FrameLayout {
     private CardView searchBar;
     private ImageButton back;
     private ImageButton clear;
+    private View backgroundView;
+    private RecyclerView suggestions;
+    private SuggestionsAdapter suggestionsAdapter;
 
     private SearchViewListener searchViewListener;
 
@@ -49,7 +55,13 @@ public class MySearchView extends FrameLayout {
         back = (ImageButton) findViewById(R.id.action_back);
         searchEditText = (EditText) findViewById(R.id.et_search);
         clear = (ImageButton) findViewById(R.id.action_clear);
-
+        backgroundView = findViewById(R.id.transparent_view);
+        suggestions = (RecyclerView) findViewById(R.id.suggestion_list);
+        suggestions.setLayoutManager(new LinearLayoutManager(suggestions.getContext()));
+        suggestionsAdapter = new SuggestionsAdapter(getContext(),
+            Arrays.asList(getResources().getStringArray(R.array.suggestions)));
+        suggestions.setAdapter(suggestionsAdapter);
+        suggestions.setHasFixedSize(true);
         setEvents();
     }
 
@@ -64,6 +76,12 @@ public class MySearchView extends FrameLayout {
             @Override
             public void onClick(View v) {
                 searchEditText.setText("");
+            }
+        });
+        backgroundView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeSearch();
             }
         });
     }
