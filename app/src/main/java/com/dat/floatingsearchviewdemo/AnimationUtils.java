@@ -45,12 +45,12 @@ public class AnimationUtils {
 
     @TargetApi(21)
     public static void circleRevealView(View view) {
-        circleRevealView(view, ANIMATION_DURATION_SHORT);
+        circleRevealView(view, ANIMATION_DURATION_SHORTEST);
     }
 
     @TargetApi(21)
     public static void circleHideView(final View view, AnimatorListenerAdapter listenerAdapter) {
-        circleHideView(view, ANIMATION_DURATION_SHORT, listenerAdapter);
+        circleHideView(view, ANIMATION_DURATION_SHORTEST, listenerAdapter);
     }
 
     @TargetApi(21)
@@ -151,4 +151,6 @@ public class AnimationUtils {
         fadeInView(showView, duration);
         fadeOutView(hideView, duration);
     }
+
+    // TODO - Cross fade with circle reveal.
 }

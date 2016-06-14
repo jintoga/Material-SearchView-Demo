@@ -45,6 +45,9 @@ public class MyFragment extends Fragment implements MySearchView.SearchViewListe
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.search, menu);
         searchItem = menu.findItem(R.id.search);
+        //important: View.GONE should be called here instead of in XML
+        //deal with first attempt width,height 0
+        searchView.setVisibility(View.GONE);
         searchItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -59,6 +62,10 @@ public class MyFragment extends Fragment implements MySearchView.SearchViewListe
 
     @Override
     public void onSearchViewOpen() {
+        //deal with first attempt width,height 0
+        if (searchView.getVisibility() == View.GONE) {
+            searchView.setVisibility(View.VISIBLE);
+        }
         if (searchItem != null) {
             AnimationUtils.fadeOutView(toolbar);
         }

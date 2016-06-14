@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.os.Build;
+import android.support.v7.widget.CardView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -13,7 +14,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 
 /**
  * Created by DAT on 13-Jun-16.
@@ -23,7 +23,7 @@ public class MySearchView extends FrameLayout {
     private boolean isSearchViewOpen;
     private FrameLayout rootView;
     private EditText searchEditText;
-    private LinearLayout searchBar;
+    private CardView searchBar;
     private ImageButton back;
     private ImageButton clear;
 
@@ -32,7 +32,6 @@ public class MySearchView extends FrameLayout {
     public MySearchView(Context context) {
         super(context);
         init();
-        initSearchView();
     }
 
     public MySearchView(Context context, AttributeSet attrs) {
@@ -46,7 +45,7 @@ public class MySearchView extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.search_view, this, true);
         // Get items
         rootView = (FrameLayout) findViewById(R.id.search_layout);
-        searchBar = (LinearLayout) findViewById(R.id.search_bar);
+        searchBar = (CardView) findViewById(R.id.search_bar);
         back = (ImageButton) findViewById(R.id.action_back);
         searchEditText = (EditText) findViewById(R.id.et_search);
         clear = (ImageButton) findViewById(R.id.action_clear);
@@ -106,7 +105,6 @@ public class MySearchView extends FrameLayout {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             rootView.setVisibility(View.VISIBLE);
-            AnimationUtils.circleRevealView(rootView);
             AnimationUtils.circleRevealView(searchBar);
         } else {
             AnimationUtils.fadeInView(rootView);
@@ -142,7 +140,6 @@ public class MySearchView extends FrameLayout {
         };
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            AnimationUtils.circleHideView(rootView, listenerAdapter);
             AnimationUtils.circleHideView(searchBar, listenerAdapter);
         } else {
             AnimationUtils.fadeOutView(rootView);
