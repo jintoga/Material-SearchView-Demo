@@ -13,11 +13,9 @@
         android:background="@color/search_layover_bg" />
 
     <LinearLayout
-        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        android:animateLayoutChanges="true"
         android:elevation="2dp"
         android:orientation="vertical">
 
@@ -70,13 +68,20 @@
         </LinearLayout>
 
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/suggestion_list"
+        <LinearLayout
+            android:id="@+id/container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="-2dp"
-            android:background="@drawable/search_view_rounded_bottom_corners_bg"
-            android:divider="@null"
-            android:dividerHeight="0dp" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/suggestion_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="-2dp"
+                android:background="@drawable/search_view_rounded_bottom_corners_bg"
+                android:divider="@null"
+                android:dividerHeight="0dp" />
+        </LinearLayout>
     </LinearLayout>
 </FrameLayout>

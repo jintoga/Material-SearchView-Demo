@@ -2,9 +2,10 @@ package com.dat.floatingsearchviewdemo;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.LayoutTransition;
 import android.content.Context;
 import android.os.Build;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -13,10 +14,12 @@ import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import java.util.List;
 
 /**
  * Created by DAT on 13-Jun-16.
@@ -63,9 +66,6 @@ public class MySearchView extends FrameLayout {
         suggestions.setAdapter(suggestionsAdapter);
         suggestions.clearOnScrollListeners();
         container = (LinearLayout) findViewById(R.id.container);
-        LayoutTransition layoutTransition = container.getLayoutTransition();
-        layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
-
         setEvents();
     }
 
@@ -98,7 +98,8 @@ public class MySearchView extends FrameLayout {
             }
 
             @Override
-            public void onTextChanged(CharSequence keyword, int start, int before, int count) {
+            public void onTextChanged(final CharSequence keyword, int start, int before,
+                int count) {
                 suggestionsAdapter.filterSuggestions(keyword);
                 MySearchView.this.onTextChanged(keyword);
             }
@@ -175,13 +176,61 @@ public class MySearchView extends FrameLayout {
     }
 
     private void onTextChanged(CharSequence newText) {
-
+        suggestionsListChanged();
         // If the text is not empty, show the empty button and hide the voice button
         if (!TextUtils.isEmpty(searchEditText.getText())) {
             displayClearButton(true);
         } else {
             displayClearButton(false);
         }
+    }
+
+    private void suggestionsListChanged() {
+
+        final int cardTopBottomShadowPadding = Util.dpToPx(5);
+        final int cardRadiusSize = Util.dpToPx(3);
+
+        ViewCompat.animate(container).cancel();
+        int visibleHeight = getVisibleItemsHeight(suggestionsAdapter.getSuggestions());
+        int diff = container.getHeight() - visibleHeight;
+        int addedTranslationYForShadowOffsets =
+            diff <= cardTopBottomShadowPadding ? -(cardTopBottomShadowPadding - diff)
+                : Math.max(cardRadiusSize - (diff - cardTopBottomShadowPadding), cardRadiusSize);
+        final float newTranslationY = container.getHeight()
+            +
+            getVisibleItemsHeight(suggestionsAdapter.getSuggestions())
+            + addedTranslationYForShadowOffsets;
+
+        final boolean animateAtEnd = newTranslationY >= container.getTranslationY();
+        ViewCompat.setTranslationY(container, -searchBar.getHeight());
+        ViewCompat.animate(container)
+            .setInterpolator(new LinearInterpolator())
+            .setDuration(100)
+            .translationY(newTranslationY)
+            .setListener(new ViewPropertyAnimatorListener() {
+                @Override
+                public void onAnimationStart(View view) {
+                    if (!animateAtEnd) {
+                        suggestions.smoothScrollToPosition(0);
+                    }
+                }
+
+                @Override
+                public void onAnimationEnd(View view) {
+                    if (animateAtEnd) {
+                        int lastPos = suggestions.getAdapter().getItemCount() - 1;
+                        if (lastPos > -1) {
+                            suggestions.smoothScrollToPosition(lastPos);
+                        }
+                    }
+                }
+
+                @Override
+                public void onAnimationCancel(View view) {
+                    container.setTranslationY(newTranslationY);
+                }
+            })
+            .start();
     }
 
     private void displayClearButton(boolean display) {
@@ -192,5 +241,19 @@ public class MySearchView extends FrameLayout {
         void onSearchViewOpen();
 
         void onSearchViewClosed();
+    }
+
+    private int getVisibleItemsHeight(List<String> data) {
+
+        int visibleItemsHeight = 0;
+        for (int i = 0; i < data.size() && i < suggestions.getChildCount(); i++) {
+            visibleItemsHeight += suggestions.getChildAt(i).getHeight();
+
+            if (visibleItemsHeight > container.getHeight()) {
+                visibleItemsHeight = container.getHeight();
+                break;
+            }
+        }
+        return visibleItemsHeight;
     }
 }

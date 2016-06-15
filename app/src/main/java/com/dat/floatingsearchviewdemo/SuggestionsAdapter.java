@@ -26,6 +26,7 @@ public class SuggestionsAdapter extends RecyclerView.Adapter<SuggestionsAdapter.
     private List<String> suggestions;
     private List<String> suggestionsFromAssets;
     private String keyword;
+    private int lastPosition = -1;
 
     public SuggestionsAdapter(Context context) {
         this.context = context;
@@ -74,6 +75,10 @@ public class SuggestionsAdapter extends RecyclerView.Adapter<SuggestionsAdapter.
         suggestions.clear();
         suggestions.addAll(data);
         notifyDataSetChanged();
+    }
+
+    public List<String> getSuggestions() {
+        return suggestions;
     }
 
     public String getValueAt(int position) {
