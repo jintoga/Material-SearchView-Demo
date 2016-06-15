@@ -58,7 +58,7 @@ public class MySearchView extends FrameLayout {
         backgroundView = findViewById(R.id.transparent_view);
         suggestions = (RecyclerView) findViewById(R.id.suggestion_list);
         suggestions.setLayoutManager(new LinearLayoutManager(suggestions.getContext()));
-        suggestionsAdapter = new SuggestionsAdapter(getContext(),
+        suggestionsAdapter = new SuggestionsAdapter(
             Arrays.asList(getResources().getStringArray(R.array.suggestions)));
         suggestions.setAdapter(suggestionsAdapter);
         suggestions.setHasFixedSize(true);

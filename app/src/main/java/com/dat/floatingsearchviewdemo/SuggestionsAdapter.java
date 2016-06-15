@@ -1,9 +1,7 @@
 package com.dat.floatingsearchviewdemo;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +13,52 @@ import java.util.List;
  */
 public class SuggestionsAdapter extends RecyclerView.Adapter<SuggestionsAdapter.ViewHolder> {
 
-    private final TypedValue mTypedValue = new TypedValue();
-    private int mBackground;
+    private final static int MAX_NUMBER_SUGGESTIONS = 5;
     private List<String> mValues;
+
+    public SuggestionsAdapter(List<String> items) {
+        mValues = items;
+    }
+
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+            .inflate(R.layout.suggestion_item, parent, false);
+        return new ViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(final ViewHolder holder, int position) {
+        if (mValues.get(position) != null) {
+            final String currentData = mValues.get(position);
+            holder.mTextView.setText(currentData);
+            holder.mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("Clicked", currentData);
+                }
+            });
+        }
+    }
+
+    public void setData(List<String> data) {
+        mValues.clear();
+        mValues.addAll(data);
+        notifyDataSetChanged();
+    }
+
+    public String getValueAt(int position) {
+        return mValues.get(position);
+    }
+
+    @Override
+    public int getItemCount() {
+        if (mValues != null) {
+            return mValues.size() > MAX_NUMBER_SUGGESTIONS ? MAX_NUMBER_SUGGESTIONS
+                : mValues.size();
+        }
+        return 0;
+    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
@@ -28,50 +69,5 @@ public class SuggestionsAdapter extends RecyclerView.Adapter<SuggestionsAdapter.
             mView = view;
             mTextView = (TextView) view.findViewById(R.id.suggestion);
         }
-    }
-
-    public String getValueAt(int position) {
-        return mValues.get(position);
-    }
-
-    public SuggestionsAdapter(Context context, List<String> items) {
-        context.getTheme().resolveAttribute(R.attr.selectableItemBackground, mTypedValue, true);
-        mBackground = mTypedValue.resourceId;
-        mValues = items;
-    }
-
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-            .inflate(R.layout.suggestion_item, parent, false);
-        view.setBackgroundResource(mBackground);
-        return new ViewHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
-        holder.mTextView.setText(mValues.get(position));
-
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("Clicked", getValueAt(position));
-            }
-        });
-    }
-
-    public void setData(List<String> data) {
-        mValues.clear();
-        mValues.addAll(data);
-        notifyDataSetChanged();
-    }
-
-    public List<String> getmValues() {
-        return mValues;
-    }
-
-    @Override
-    public int getItemCount() {
-        return 5;
     }
 }
