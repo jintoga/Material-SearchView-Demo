@@ -72,6 +72,7 @@
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/search_view_rounded_bottom_corners_bg"
             android:orientation="vertical">
 
             <android.support.v7.widget.RecyclerView
@@ -79,7 +80,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="-2dp"
-                android:background="@drawable/search_view_rounded_bottom_corners_bg"
                 android:divider="@null"
                 android:dividerHeight="0dp" />
         </LinearLayout>

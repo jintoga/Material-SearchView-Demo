@@ -12,8 +12,11 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -38,6 +41,9 @@ public class MySearchView extends FrameLayout {
     private SuggestionsAdapter suggestionsAdapter;
 
     private SearchViewListener searchViewListener;
+
+    private final Interpolator SUGGEST_ITEM_ADD_ANIM_INTERPOLATOR = new LinearInterpolator();
+    private final int ATTRS_SUGGESTION_ANIM_DURATION_DEFAULT = 250;
 
     public MySearchView(Context context) {
         super(context);
@@ -66,6 +72,7 @@ public class MySearchView extends FrameLayout {
         suggestions.setAdapter(suggestionsAdapter);
         suggestions.clearOnScrollListeners();
         container = (LinearLayout) findViewById(R.id.container);
+
         setEvents();
     }
 
@@ -101,6 +108,14 @@ public class MySearchView extends FrameLayout {
             public void onTextChanged(final CharSequence keyword, int start, int before,
                 int count) {
                 suggestionsAdapter.filterSuggestions(keyword);
+                suggestions.getViewTreeObserver()
+                    .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            Util.removeGlobalLayoutObserver(suggestions, this);
+                            suggestionsListChanged();
+                        }
+                    });
                 MySearchView.this.onTextChanged(keyword);
             }
 
@@ -176,7 +191,6 @@ public class MySearchView extends FrameLayout {
     }
 
     private void onTextChanged(CharSequence newText) {
-        suggestionsListChanged();
         // If the text is not empty, show the empty button and hide the voice button
         if (!TextUtils.isEmpty(searchEditText.getText())) {
             displayClearButton(true);
@@ -186,26 +200,27 @@ public class MySearchView extends FrameLayout {
     }
 
     private void suggestionsListChanged() {
-
         final int cardTopBottomShadowPadding = Util.dpToPx(5);
         final int cardRadiusSize = Util.dpToPx(3);
 
-        ViewCompat.animate(container).cancel();
         int visibleHeight = getVisibleItemsHeight(suggestionsAdapter.getSuggestions());
         int diff = container.getHeight() - visibleHeight;
         int addedTranslationYForShadowOffsets =
             diff <= cardTopBottomShadowPadding ? -(cardTopBottomShadowPadding - diff)
                 : Math.max(cardRadiusSize - (diff - cardTopBottomShadowPadding), cardRadiusSize);
-        final float newTranslationY = container.getHeight()
+        final float newTranslationY = -container.getHeight()
             +
             getVisibleItemsHeight(suggestionsAdapter.getSuggestions())
             + addedTranslationYForShadowOffsets;
 
         final boolean animateAtEnd = newTranslationY >= container.getTranslationY();
-        ViewCompat.setTranslationY(container, -searchBar.getHeight());
+
+        Log.d("searchBar:", 2 * searchBar.getHeight() + "");
+        Log.d("newTranslationY:", newTranslationY + "");
+        ViewCompat.animate(container).cancel();
         ViewCompat.animate(container)
-            .setInterpolator(new LinearInterpolator())
-            .setDuration(100)
+            .setInterpolator(SUGGEST_ITEM_ADD_ANIM_INTERPOLATOR)
+            .setDuration(1000)
             .translationY(newTranslationY)
             .setListener(new ViewPropertyAnimatorListener() {
                 @Override
@@ -254,6 +269,8 @@ public class MySearchView extends FrameLayout {
                 break;
             }
         }
+
+        Log.d("visibleItemsHeight:", visibleItemsHeight + "");
         return visibleItemsHeight;
     }
 }
