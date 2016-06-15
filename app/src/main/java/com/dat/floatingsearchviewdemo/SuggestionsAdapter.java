@@ -1,11 +1,18 @@
 package com.dat.floatingsearchviewdemo;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -14,10 +21,16 @@ import java.util.List;
 public class SuggestionsAdapter extends RecyclerView.Adapter<SuggestionsAdapter.ViewHolder> {
 
     private final static int MAX_NUMBER_SUGGESTIONS = 5;
-    private List<String> mValues;
 
-    public SuggestionsAdapter(List<String> items) {
-        mValues = items;
+    private Context context;
+    private List<String> suggestions;
+    private List<String> suggestionsFromAssets;
+    private String keyword;
+
+    public SuggestionsAdapter(Context context) {
+        this.context = context;
+        suggestionsFromAssets =
+            Arrays.asList(context.getResources().getStringArray(R.array.suggestions));
     }
 
     @Override
@@ -29,9 +42,9 @@ public class SuggestionsAdapter extends RecyclerView.Adapter<SuggestionsAdapter.
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        if (mValues.get(position) != null) {
-            final String currentData = mValues.get(position);
-            holder.mTextView.setText(currentData);
+        if (suggestions.get(position) != null) {
+            final String currentData = suggestions.get(position);
+            holder.mTextView.setText(getColoredKeywordSuggestion(currentData));
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -41,21 +54,44 @@ public class SuggestionsAdapter extends RecyclerView.Adapter<SuggestionsAdapter.
         }
     }
 
+    public void filterSuggestions(CharSequence charSequence) {
+        List<String> results = new ArrayList<>();
+        if (charSequence != null && !charSequence.toString().trim().isEmpty()) {
+            this.keyword = charSequence.toString();
+            for (String item : suggestionsFromAssets) {
+                if (item.toLowerCase().startsWith(keyword)) {
+                    results.add(item);
+                }
+            }
+        }
+        setData(results);
+    }
+
     public void setData(List<String> data) {
-        mValues.clear();
-        mValues.addAll(data);
+        if (suggestions == null) {
+            suggestions = new ArrayList<>();
+        }
+        suggestions.clear();
+        suggestions.addAll(data);
         notifyDataSetChanged();
     }
 
     public String getValueAt(int position) {
-        return mValues.get(position);
+        return suggestions.get(position);
+    }
+
+    private Spannable getColoredKeywordSuggestion(String suggestion) {
+        Spannable result = new SpannableString(suggestion);
+        result.setSpan(new ForegroundColorSpan(context.getResources().getColor(R.color.gray_50)), 0,
+            keyword.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return result;
     }
 
     @Override
     public int getItemCount() {
-        if (mValues != null) {
-            return mValues.size() > MAX_NUMBER_SUGGESTIONS ? MAX_NUMBER_SUGGESTIONS
-                : mValues.size();
+        if (suggestions != null) {
+            return suggestions.size() > MAX_NUMBER_SUGGESTIONS ? MAX_NUMBER_SUGGESTIONS
+                : suggestions.size();
         }
         return 0;
     }

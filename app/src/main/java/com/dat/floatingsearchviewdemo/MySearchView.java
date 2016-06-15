@@ -2,6 +2,7 @@ package com.dat.floatingsearchviewdemo;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.LayoutTransition;
 import android.content.Context;
 import android.os.Build;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,7 +17,6 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import java.util.Arrays;
 
 /**
  * Created by DAT on 13-Jun-16.
@@ -30,6 +30,7 @@ public class MySearchView extends FrameLayout {
     private ImageButton back;
     private ImageButton clear;
     private View backgroundView;
+    private LinearLayout container;
     private RecyclerView suggestions;
     private SuggestionsAdapter suggestionsAdapter;
 
@@ -58,10 +59,13 @@ public class MySearchView extends FrameLayout {
         backgroundView = findViewById(R.id.transparent_view);
         suggestions = (RecyclerView) findViewById(R.id.suggestion_list);
         suggestions.setLayoutManager(new LinearLayoutManager(suggestions.getContext()));
-        suggestionsAdapter = new SuggestionsAdapter(
-            Arrays.asList(getResources().getStringArray(R.array.suggestions)));
+        suggestionsAdapter = new SuggestionsAdapter(getContext());
         suggestions.setAdapter(suggestionsAdapter);
-        suggestions.setHasFixedSize(true);
+        suggestions.clearOnScrollListeners();
+        container = (LinearLayout) findViewById(R.id.container);
+        LayoutTransition layoutTransition = container.getLayoutTransition();
+        layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
+
         setEvents();
     }
 
@@ -94,8 +98,9 @@ public class MySearchView extends FrameLayout {
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                MySearchView.this.onTextChanged(s);
+            public void onTextChanged(CharSequence keyword, int start, int before, int count) {
+                suggestionsAdapter.filterSuggestions(keyword);
+                MySearchView.this.onTextChanged(keyword);
             }
 
             @Override
