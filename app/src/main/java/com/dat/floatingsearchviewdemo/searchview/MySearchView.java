@@ -12,6 +12,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -38,6 +39,8 @@ public class MySearchView extends FrameLayout {
 
     private SearchViewListener searchViewListener;
 
+    private boolean collapsingSuggestions = false;
+
     public MySearchView(Context context) {
         super(context);
         init();
@@ -50,21 +53,37 @@ public class MySearchView extends FrameLayout {
     }
 
     private void init() {
-        // Inflate view
         LayoutInflater.from(getContext()).inflate(R.layout.search_view, this, true);
-        // Get items
         rootView = (FrameLayout) findViewById(R.id.search_layout);
         searchBar = (LinearLayout) findViewById(R.id.search_bar);
         back = (ImageButton) findViewById(R.id.action_back);
         searchEditText = (EditText) findViewById(R.id.et_search);
         clear = (ImageButton) findViewById(R.id.action_clear);
         backgroundView = findViewById(R.id.transparent_view);
+        backgroundView.setVisibility(View.GONE);
         suggestions = (ListView) findViewById(R.id.suggestion_list);
         suggestionsAdapter = new SuggestionsAdapter(getContext());
         suggestions.setAdapter(suggestionsAdapter);
         container = (LinearLayout) findViewById(R.id.container);
         LayoutTransition layoutTransition = container.getLayoutTransition();
         layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
+        layoutTransition.addTransitionListener(new LayoutTransition.TransitionListener() {
+            @Override
+            public void startTransition(LayoutTransition transition, ViewGroup container, View view,
+                int transitionType) {
+                //Ignore
+            }
+
+            @Override
+            public void endTransition(LayoutTransition transition, ViewGroup container, View view,
+                int transitionType) {
+                if (collapsingSuggestions) {
+                    Log.d("collapsingSuggestions", "collapsingSuggestions");
+                    closeSearchBar();
+                    collapsingSuggestions = false;
+                }
+            }
+        });
 
         setEvents();
     }
@@ -73,7 +92,7 @@ public class MySearchView extends FrameLayout {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                closeSearch();
+                closeSearchView();
             }
         });
         clear.setOnClickListener(new OnClickListener() {
@@ -85,7 +104,7 @@ public class MySearchView extends FrameLayout {
         backgroundView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                closeSearch();
+                closeSearchView();
             }
         });
         suggestions.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -119,22 +138,30 @@ public class MySearchView extends FrameLayout {
         this.searchViewListener = searchViewListener;
     }
 
-    /**
-     * Displays the SearchView.
-     */
-    public void openSearch() {
+    public void openSearchView() {
         // If search is already open, just return.
         if (isSearchViewOpen) {
             return;
         }
 
-        // Get focus
-        searchEditText.setText("");
         searchEditText.requestFocus();
+
+        AnimatorListenerAdapter listenerAdapter = new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                backgroundView.setVisibility(VISIBLE);
+                //After SearchBar is revealed if keyword is not empty then open suggestions section
+                if (!searchEditText.getText().toString().isEmpty()) {
+                    suggestionsAdapter.filterSuggestions(searchEditText.getText());
+                    MySearchView.this.onTextChanged(searchEditText.getText());
+                }
+            }
+        };
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             rootView.setVisibility(View.VISIBLE);
-            AnimationUtils.circleRevealView(searchBar);
+            AnimationUtils.circleRevealView(searchBar, listenerAdapter);
         } else {
             AnimationUtils.fadeInView(rootView);
         }
@@ -147,15 +174,26 @@ public class MySearchView extends FrameLayout {
         isSearchViewOpen = true;
     }
 
-    public void closeSearch() {
+    public void closeSearchView() {
         // If we're already closed, just return.
         if (!isSearchViewOpen) {
             return;
         }
 
-        // Clear text, values, and focus.
-        searchEditText.setText("");
-        clearFocus();
+        if (suggestionsAdapter.getCount() == 0) {
+            // Suggestions section is empty(collapsed)
+            // just close the SearchBar
+            closeSearchBar();
+        } else {
+            // Suggestions section is expanded
+            // Clear text, values, and focus.
+            // closeSearchBar should be called after Suggestions section is collapsed
+            suggestionsAdapter.clearData();
+            collapsingSuggestions = true;
+        }
+    }
+
+    private void closeSearchBar() {
 
         final View v = rootView;
 
@@ -165,6 +203,7 @@ public class MySearchView extends FrameLayout {
                 super.onAnimationEnd(animation);
                 // After the animation is done. Hide the root view.
                 v.setVisibility(View.GONE);
+                backgroundView.setVisibility(View.GONE);
             }
         };
 

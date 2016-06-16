@@ -72,6 +72,14 @@ public class SuggestionsAdapter extends ArrayAdapter<String> {
         notifyDataSetChanged();
     }
 
+    public void clearData() {
+        if (suggestions == null) {
+            return;
+        }
+        suggestions.clear();
+        notifyDataSetChanged();
+    }
+
     public String getValueAt(int position) {
         return suggestions.get(position);
     }

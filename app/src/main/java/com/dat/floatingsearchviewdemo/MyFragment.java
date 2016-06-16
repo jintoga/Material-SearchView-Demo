@@ -54,7 +54,7 @@ public class MyFragment extends Fragment implements MySearchView.SearchViewListe
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 searchView.setSearchViewListener(MyFragment.this);
-                searchView.openSearch();
+                searchView.openSearchView();
                 return true;
             }
         });

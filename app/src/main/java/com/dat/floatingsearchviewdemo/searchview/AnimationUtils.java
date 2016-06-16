@@ -21,7 +21,8 @@ public class AnimationUtils {
     public static final int ANIMATION_DURATION_LONG = 800;
 
     @TargetApi(21)
-    public static void circleRevealView(View view, int duration) {
+    public static void circleRevealView(View view, int duration,
+        AnimatorListenerAdapter listenerAdapter) {
         // get the center for the clipping circle
         int cx = view.getWidth();
         int cy = view.getHeight() / 2;
@@ -31,6 +32,8 @@ public class AnimationUtils {
 
         // create the animator for this view (the start radius is zero)
         Animator anim = ViewAnimationUtils.createCircularReveal(view, cx, cy, 0, finalRadius);
+
+        anim.addListener(listenerAdapter);
 
         if (duration > 0) {
             anim.setDuration(duration);
@@ -44,13 +47,13 @@ public class AnimationUtils {
     }
 
     @TargetApi(21)
-    public static void circleRevealView(View view) {
-        circleRevealView(view, ANIMATION_DURATION_SHORTEST);
+    public static void circleRevealView(View view, AnimatorListenerAdapter listenerAdapter) {
+        circleRevealView(view, ANIMATION_DURATION_SHORT, listenerAdapter);
     }
 
     @TargetApi(21)
     public static void circleHideView(final View view, AnimatorListenerAdapter listenerAdapter) {
-        circleHideView(view, ANIMATION_DURATION_SHORTEST, listenerAdapter);
+        circleHideView(view, ANIMATION_DURATION_SHORT, listenerAdapter);
     }
 
     @TargetApi(21)
@@ -75,9 +78,6 @@ public class AnimationUtils {
             anim.setDuration(ANIMATION_DURATION_SHORT);
         }
 
-        //        anim.setStartDelay(200);
-
-        // start the animation
         anim.start();
     }
 
