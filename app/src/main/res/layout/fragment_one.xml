@@ -17,7 +17,7 @@
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-        <com.dat.floatingsearchviewdemo.MySearchView
+        <com.dat.floatingsearchviewdemo.SearchView.MySearchView
             android:id="@+id/search_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

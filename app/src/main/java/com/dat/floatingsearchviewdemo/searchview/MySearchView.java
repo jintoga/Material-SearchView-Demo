@@ -1,22 +1,24 @@
-package com.dat.floatingsearchviewdemo;
+package com.dat.floatingsearchviewdemo.SearchView;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.LayoutTransition;
 import android.content.Context;
 import android.os.Build;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import com.dat.floatingsearchviewdemo.R;
 
 /**
  * Created by DAT on 13-Jun-16.
@@ -31,7 +33,7 @@ public class MySearchView extends FrameLayout {
     private ImageButton clear;
     private View backgroundView;
     private LinearLayout container;
-    private RecyclerView suggestions;
+    private ListView suggestions;
     private SuggestionsAdapter suggestionsAdapter;
 
     private SearchViewListener searchViewListener;
@@ -57,11 +59,9 @@ public class MySearchView extends FrameLayout {
         searchEditText = (EditText) findViewById(R.id.et_search);
         clear = (ImageButton) findViewById(R.id.action_clear);
         backgroundView = findViewById(R.id.transparent_view);
-        suggestions = (RecyclerView) findViewById(R.id.suggestion_list);
-        suggestions.setLayoutManager(new LinearLayoutManager(suggestions.getContext()));
+        suggestions = (ListView) findViewById(R.id.suggestion_list);
         suggestionsAdapter = new SuggestionsAdapter(getContext());
         suggestions.setAdapter(suggestionsAdapter);
-        suggestions.clearOnScrollListeners();
         container = (LinearLayout) findViewById(R.id.container);
         LayoutTransition layoutTransition = container.getLayoutTransition();
         layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
@@ -86,6 +86,12 @@ public class MySearchView extends FrameLayout {
             @Override
             public void onClick(View v) {
                 closeSearch();
+            }
+        });
+        suggestions.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d("Clicked", (String) parent.getItemAtPosition(position));
             }
         });
     }
@@ -188,7 +194,7 @@ public class MySearchView extends FrameLayout {
         clear.setVisibility(display ? View.VISIBLE : View.GONE);
     }
 
-    interface SearchViewListener {
+    public interface SearchViewListener {
         void onSearchViewOpen();
 
         void onSearchViewClosed();

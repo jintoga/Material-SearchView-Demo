@@ -1,16 +1,16 @@
-package com.dat.floatingsearchviewdemo;
+package com.dat.floatingsearchviewdemo.SearchView;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import com.dat.floatingsearchviewdemo.R;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,40 +18,36 @@ import java.util.List;
 /**
  * Created by Nguyen on 6/14/2016.
  */
-public class SuggestionsAdapter extends RecyclerView.Adapter<SuggestionsAdapter.ViewHolder> {
+public class SuggestionsAdapter extends ArrayAdapter<String> {
 
-    private final static int MAX_NUMBER_SUGGESTIONS = 5;
+    private final static int MAX_NUMBER_SUGGESTIONS = 7;
 
-    private Context context;
     private List<String> suggestions;
     private List<String> suggestionsFromAssets;
     private String keyword;
 
     public SuggestionsAdapter(Context context) {
-        this.context = context;
+        super(context, R.layout.suggestion_item);
         suggestionsFromAssets =
             Arrays.asList(context.getResources().getStringArray(R.array.suggestions));
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-            .inflate(R.layout.suggestion_item, parent, false);
-        return new ViewHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder holder;
+        if (convertView == null) {
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.suggestion_item, null);
+            holder = new ViewHolder();
+            holder.mTextView = (TextView) convertView.findViewById(R.id.suggestion);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
         if (suggestions.get(position) != null) {
             final String currentData = suggestions.get(position);
             holder.mTextView.setText(getColoredKeywordSuggestion(currentData));
-            holder.mView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d("Clicked", currentData);
-                }
-            });
         }
+        return convertView;
     }
 
     public void filterSuggestions(CharSequence charSequence) {
@@ -82,13 +78,19 @@ public class SuggestionsAdapter extends RecyclerView.Adapter<SuggestionsAdapter.
 
     private Spannable getColoredKeywordSuggestion(String suggestion) {
         Spannable result = new SpannableString(suggestion);
-        result.setSpan(new ForegroundColorSpan(context.getResources().getColor(R.color.gray_50)), 0,
+        result.setSpan(
+            new ForegroundColorSpan(getContext().getResources().getColor(R.color.gray_50)), 0,
             keyword.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return result;
     }
 
     @Override
-    public int getItemCount() {
+    public String getItem(int position) {
+        return suggestions.get(position);
+    }
+
+    @Override
+    public int getCount() {
         if (suggestions != null) {
             return suggestions.size() > MAX_NUMBER_SUGGESTIONS ? MAX_NUMBER_SUGGESTIONS
                 : suggestions.size();
@@ -96,14 +98,7 @@ public class SuggestionsAdapter extends RecyclerView.Adapter<SuggestionsAdapter.
         return 0;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public final View mView;
-        public final TextView mTextView;
-
-        public ViewHolder(View view) {
-            super(view);
-            mView = view;
-            mTextView = (TextView) view.findViewById(R.id.suggestion);
-        }
+    static class ViewHolder {
+        public TextView mTextView;
     }
 }

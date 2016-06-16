@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import com.dat.floatingsearchviewdemo.SearchView.AnimationUtils;
+import com.dat.floatingsearchviewdemo.SearchView.MySearchView;
 
 /**
  * Created by DAT on 13-Jun-16.

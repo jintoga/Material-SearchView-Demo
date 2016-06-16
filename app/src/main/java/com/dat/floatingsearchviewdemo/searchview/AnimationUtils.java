@@ -1,4 +1,4 @@
-package com.dat.floatingsearchviewdemo;
+package com.dat.floatingsearchviewdemo.SearchView;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
