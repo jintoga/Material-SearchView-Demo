@@ -27,7 +27,7 @@ public class SuggestionsAdapter extends ArrayAdapter<String> {
     private String keyword;
 
     public SuggestionsAdapter(Context context) {
-        super(context, R.layout.suggestion_item);
+        super(context, R.layout.search_view_suggestion_item);
         suggestionsFromAssets =
             Arrays.asList(context.getResources().getStringArray(R.array.suggestions));
     }
@@ -36,7 +36,7 @@ public class SuggestionsAdapter extends ArrayAdapter<String> {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.suggestion_item, null);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.search_view_suggestion_item, null);
             holder = new ViewHolder();
             holder.mTextView = (TextView) convertView.findViewById(R.id.suggestion);
             convertView.setTag(holder);
