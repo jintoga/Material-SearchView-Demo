@@ -87,7 +87,7 @@ public class SuggestionsAdapter extends ArrayAdapter<String> {
     private Spannable getColoredKeywordSuggestion(String suggestion) {
         Spannable result = new SpannableString(suggestion);
         result.setSpan(
-            new ForegroundColorSpan(getContext().getResources().getColor(R.color.gray_50)), 0,
+            new ForegroundColorSpan(getContext().getResources().getColor(R.color.search_view_secondary_color)), 0,
             keyword.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return result;
     }
