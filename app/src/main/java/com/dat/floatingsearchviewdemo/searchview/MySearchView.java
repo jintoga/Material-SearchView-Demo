@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.LayoutTransition;
 import android.content.Context;
 import android.os.Build;
+import android.support.v7.widget.CardView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -29,7 +30,7 @@ public class MySearchView extends FrameLayout {
     private boolean isSearchViewOpen;
     private FrameLayout rootView;
     private EditText searchEditText;
-    private LinearLayout searchBar;
+    private CardView searchBar;
     private ImageButton back;
     private ImageButton clear;
     private View backgroundView;
@@ -55,7 +56,7 @@ public class MySearchView extends FrameLayout {
     private void init() {
         LayoutInflater.from(getContext()).inflate(R.layout.search_view, this, true);
         rootView = (FrameLayout) findViewById(R.id.search_layout);
-        searchBar = (LinearLayout) findViewById(R.id.search_bar);
+        searchBar = (CardView) findViewById(R.id.search_bar);
         back = (ImageButton) findViewById(R.id.action_back);
         searchEditText = (EditText) findViewById(R.id.et_search);
         clear = (ImageButton) findViewById(R.id.action_clear);

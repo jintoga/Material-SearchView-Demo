@@ -36,7 +36,8 @@ public class SuggestionsAdapter extends ArrayAdapter<String> {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.search_view_suggestion_item, null);
+            convertView = LayoutInflater.from(getContext())
+                .inflate(R.layout.search_view_suggestion_item, null);
             holder = new ViewHolder();
             holder.mTextView = (TextView) convertView.findViewById(R.id.suggestion);
             convertView.setTag(holder);
@@ -86,8 +87,8 @@ public class SuggestionsAdapter extends ArrayAdapter<String> {
 
     private Spannable getColoredKeywordSuggestion(String suggestion) {
         Spannable result = new SpannableString(suggestion);
-        result.setSpan(
-            new ForegroundColorSpan(getContext().getResources().getColor(R.color.search_view_secondary_color)), 0,
+        result.setSpan(new ForegroundColorSpan(
+                getContext().getResources().getColor(R.color.search_view_secondary_color)), 0,
             keyword.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return result;
     }
