@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout android:id="@+id/search_layout"
+<merge android:id="@+id/search_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:visibility="visible">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <View
         android:id="@+id/transparent_view"
@@ -99,4 +96,4 @@
                 android:overScrollMode="never" />
         </android.support.v7.widget.CardView>
     </LinearLayout>
-</FrameLayout>
+</merge>

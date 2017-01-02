@@ -28,7 +28,6 @@ import com.dat.floatingsearchviewdemo.R;
 public class MySearchView extends FrameLayout {
 
     private boolean isSearchViewOpen;
-    private FrameLayout rootView;
     private EditText searchEditText;
     private CardView searchBar;
     private ImageButton back;
@@ -44,23 +43,32 @@ public class MySearchView extends FrameLayout {
 
     public MySearchView(Context context) {
         super(context);
+        initDrawables();
         init();
+        initSearchView();
     }
 
     public MySearchView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        initDrawables();
         init();
         initSearchView();
     }
 
     private void init() {
         LayoutInflater.from(getContext()).inflate(R.layout.search_view, this, true);
-        rootView = (FrameLayout) findViewById(R.id.search_layout);
         searchBar = (CardView) findViewById(R.id.search_bar);
         back = (ImageButton) findViewById(R.id.action_back);
         searchEditText = (EditText) findViewById(R.id.et_search);
         clear = (ImageButton) findViewById(R.id.action_clear);
         backgroundView = findViewById(R.id.transparent_view);
+        backgroundView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMenuBtnDrawable.animateDrawable(MenuArrowDrawable.ARROW_TO_HAMBURGER);
+                closeSearchView();
+            }
+        });
         backgroundView.setVisibility(View.GONE);
         suggestions = (ListView) findViewById(R.id.suggestion_list);
         suggestionsAdapter = new SuggestionsAdapter(getContext());
@@ -116,6 +124,13 @@ public class MySearchView extends FrameLayout {
         });
     }
 
+    private MenuArrowDrawable mMenuBtnDrawable;
+
+    private void initDrawables() {
+        mMenuBtnDrawable = new MenuArrowDrawable(getContext());
+        mMenuBtnDrawable.setColor(getContext().getResources().getColor(R.color.black));
+    }
+
     private void initSearchView() {
 
         searchEditText.addTextChangedListener(new TextWatcher() {
@@ -159,6 +174,7 @@ public class MySearchView extends FrameLayout {
                 }
             }
         };
+        final View rootView = this;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             rootView.setVisibility(View.VISIBLE);
@@ -196,7 +212,7 @@ public class MySearchView extends FrameLayout {
 
     private void closeSearchBar() {
 
-        final View v = rootView;
+        final View v = this;
 
         AnimatorListenerAdapter listenerAdapter = new AnimatorListenerAdapter() {
             @Override
@@ -211,7 +227,7 @@ public class MySearchView extends FrameLayout {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             AnimationUtils.circleHideView(searchBar, listenerAdapter);
         } else {
-            AnimationUtils.fadeOutView(rootView);
+            AnimationUtils.fadeOutView(searchBar);
         }
 
         if (searchViewListener != null) {
